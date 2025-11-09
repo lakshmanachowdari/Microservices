@@ -7,6 +7,7 @@ import com.lakshman.quiz_service.Wrapper.CreateRequest;
 import com.lakshman.quiz_service.Wrapper.QuestionWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,12 @@ public class QuizController {
     @Autowired
     QuizService quizService;
 
+    @Autowired
+    Environment environment;
+
     @PostMapping(value = MarketDataConstants.CREATE_QUIZ,  produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createQuiz(@RequestBody CreateRequest request){
+        log.info("Port number: {}", environment.getProperty("local.server.port"));
         return quizService.createQuiz(request.getQuizTitle(), request.getNumQ(), request.getCategory());
     }
 

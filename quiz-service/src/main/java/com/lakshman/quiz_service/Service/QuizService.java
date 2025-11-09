@@ -6,6 +6,7 @@ import com.lakshman.quiz_service.Feing.QuizInterface;
 import com.lakshman.quiz_service.Repository.QuizRepository;
 import com.lakshman.quiz_service.Wrapper.QuestionIds;
 import com.lakshman.quiz_service.Wrapper.QuestionWrapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ public class QuizService {
     @Autowired
     QuizInterface quizInterface;
 
+    @CircuitBreaker(name  = "createQizBreaker", fallbackMethod = "createQuizFallback")
     public ResponseEntity<String> createQuiz(String quizTitle, int numQ, String category) {
         Quiz quiz = new Quiz();
         quiz.setTitle(quizTitle);
@@ -32,6 +34,10 @@ public class QuizService {
         quiz.setQuestionIds(questionIds);
         quizRepository.save(quiz);
         return new ResponseEntity<>("Created", HttpStatus.CREATED);
+    }
+
+    private ResponseEntity<String> createQuizFallback(String quizTitle, int numQ, String category, Throwable throwable){
+        return new ResponseEntity<>("FALLBACK", HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<List<QuestionWrapper>> getQuiz(Integer id) {
