@@ -8,13 +8,13 @@ import com.lakshman.question_service.Wrapper.QuestionIds;
 import com.lakshman.question_service.Wrapper.QuestionWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("question")
@@ -22,8 +22,13 @@ public class QuestionController
 {
     @Autowired
     QuestionService questionService;
+
+    @Autowired
+    Environment environment;
+
     @GetMapping(path = MarketDataConstants.ALL_QUESTIONS, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Question>> getAllQuestions(){
+        log.info("Port number: {}", environment.getProperty("local.server.port"));
         return new ResponseEntity<>(questionService.getAllQuestions(), HttpStatus.OK);
     }
 
@@ -34,29 +39,34 @@ public class QuestionController
 
     @PostMapping(path = MarketDataConstants.ADD_QUESTION, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addQuestion(@RequestBody Question question){
-        return new ResponseEntity<>(questionService.addQuestion(question), HttpStatus.CREATED);
+        return questionService.addQuestion(question);
     }
 
     @PostMapping(path = MarketDataConstants.ADD_QUESTIONS, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> addListOfQuestions(@RequestBody List<Question> questions){
-        return  new ResponseEntity<>(questionService.addListOfQuestions(questions), HttpStatus.CREATED);
+        return  questionService.addListOfQuestions(questions);
     }
 
     // Generate questions
     @GetMapping(path = MarketDataConstants.GENERATE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Integer>> generateQuestionIds(@RequestParam String category,
-                                                             @RequestParam Integer numQ){
+    public ResponseEntity<List<Integer>> generateQuestionIds(@RequestParam(value = "category") String category,
+                                                             @RequestParam(value = "numQ") Integer numQ){
         return questionService.generateQuestionIds(category, numQ);
     }
 
     // Get Question (Based on quiz Id)
-    @PostMapping(path = MarketDataConstants.GET_QUESTION_IDS, produces =  MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = MarketDataConstants.GET_QUESTION_IDS, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<QuestionWrapper>> getQuestionsByIds(@RequestBody QuestionIds questionIds){
         return questionService.getQuestionsByIds(questionIds.getQuestionIds());
     }
     // Score
-    @PostMapping(path = MarketDataConstants.GET_RESPONSE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = MarketDataConstants.SCORE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Integer> getScore(@RequestBody List<SubmitResult> submit){
         return questionService.getScore(submit);
+    }
+
+    @GetMapping(path = MarketDataConstants.CHECK_RESULT, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SubmitResult>> checkResult(@RequestParam(value = "ids") List<Integer> questionIds){
+        return questionService.checkResult(questionIds);
     }
 }
