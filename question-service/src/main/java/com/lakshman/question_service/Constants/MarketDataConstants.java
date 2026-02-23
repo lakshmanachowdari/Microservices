@@ -9,4 +9,7 @@ public  final class MarketDataConstants {
     public static final String CHECK_RESULT = "check";
     public static final String GENERATE = "generate";
     public static final String SCORE = "score";
+    public static final String SCORE_V1 = "v1/score";
+    public static final String DUPLICATE_QUESTIONS = "duplicateData";
+    public static final String DELETE_DUPLICATES = "duplicate/delete";
 }

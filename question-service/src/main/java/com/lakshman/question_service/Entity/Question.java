@@ -1,6 +1,8 @@
 package com.lakshman.question_service.Entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -10,22 +12,33 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false)
+
+    @Column(name  = "question", nullable = false)
     private String question;
-    @Column(nullable = false)
+
+    @Column(name  = "option1", nullable = false)
     private String option1;
-    @Column(nullable = false)
+
+    @Column(name  = "option2", nullable = false)
     private String option2;
-    @Column(nullable = false)
+
+    @Column(name  = "option3", nullable = false)
     private String option3;
-    @Column(nullable = false)
+
+    @Column(name  = "option4", nullable = false)
     private String option4;
-    @Column(nullable = false)
+
+    @Column(name  = "answer", nullable = false)
     private String answer;
-    @Column(nullable = false)
-    private String category;
-    @Column(nullable = false)
+
+    @NotNull(message = "Category Id can't be null")
+    @JoinColumn(name = "category_id", nullable = false)
+    private Integer categoryId;
+
+    @NotBlank(message = "Question cannot be empty")
+    @Column(name  = "question_level", nullable = false)
     private String questionLevel;
-    @Column(nullable = false)
+
+    @Column(name  = "is_deleted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isDeleted = false;
 }
