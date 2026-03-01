@@ -38,9 +38,6 @@ public class QuestionControllerTest {
     @Test
     void testGetAllQuestionsSuccess() throws Exception{
 
-        Mockito.when(questionService.getAllQuestions())
-                .thenReturn(dataUtils.getQuestionList());
-
         mockMvc.perform(get("/question/allQuestions")   // base path + constant
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

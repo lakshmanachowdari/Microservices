@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -18,10 +19,11 @@ public class Category {
     private Integer id;
 
     @NotBlank(message = "Category Name can't be null")
-    @Column(nullable = false, unique = true)
+    @Column(name  = "category", nullable = false, unique = true)
     private String categoryName;
 
-    @Column(nullable  = false)
+    @NotNull(message = "Description can't be null")
+    @Column(name  = "description", nullable  = false)
     private String description;
 
 }

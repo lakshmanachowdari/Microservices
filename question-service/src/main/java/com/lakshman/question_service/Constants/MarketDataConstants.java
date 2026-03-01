@@ -12,4 +12,5 @@ public  final class MarketDataConstants {
     public static final String SCORE_V1 = "v1/score";
     public static final String DUPLICATE_QUESTIONS = "duplicateData";
     public static final String DELETE_DUPLICATES = "duplicate/delete";
+    public static final String ADD_CATEGORY = "add";
 }
