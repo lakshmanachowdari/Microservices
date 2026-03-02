@@ -1,8 +1,8 @@
 package com.lakshman.question_service.Service;
 
+import com.lakshman.question_service.Entity.TestResponse;
 import com.lakshman.question_service.Utility.ResponseUtil;
 import com.lakshman.question_service.Entity.Question;
-import com.lakshman.question_service.Entity.SubmitResult;
 import com.lakshman.question_service.Exception.ResourceNotFoundException;
 import com.lakshman.question_service.Repository.CategoryJdbcRepository;
 import com.lakshman.question_service.Repository.CategoryJpaRepository;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,22 +43,16 @@ public class QuestionService {
 
     public ResponseEntity<?> getAllQuestions() {
         List<Question> questionList = questionJpaRepository.findAll();
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("questionList", questionList);
-        return ResponseUtil.ok("No of Questions: " + questionList.size(), responseData);
+        return ResponseUtil.ok("No of Questions: " + questionList.size(), questionList);
     }
 
     public ResponseEntity<?> getQuestionByCategory(String category) throws ResourceNotFoundException {
 
         Integer categoryId = categoryJpaRepository.findByCategoryName(category);
-        Map<String, Object> responseData = new HashMap<>();
-
         if(categoryId != null){
             List<Question> questionList = questionJpaRepository.findByCategoryId(categoryId);
-            responseData.put("categoryName", category);
-            responseData.put("questionList", questionList);
             return ResponseUtil.ok("No of Questions: " + questionList.size() + " fetched from " + category,
-                    responseData);
+                    questionList);
         }
         else throw new ResourceNotFoundException("Category Id is not found for " + category);
     }
@@ -67,7 +60,6 @@ public class QuestionService {
     @Transactional
     public ResponseEntity<?> addQuestion(@Valid QuestionDTO questionDTO) {
 
-        Map<String, Object> responseData = new HashMap<>();
         try {
             Question question = new Question();
             question.setQuestion(questionDTO.getQuestion());
@@ -83,9 +75,7 @@ public class QuestionService {
                 question.setCategoryId(categoryId);
             else throw new ResourceNotFoundException("Category Id is not found for " + questionDTO.getCategoryName());
 
-            Question questionResponse = questionJpaRepository.save(question);
-            responseData.put("Question Data", questionResponse);
-            return ResponseUtil.created("Question add successfully", responseData);
+            return ResponseUtil.created("Question add successfully", questionJpaRepository.save(question));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -94,7 +84,6 @@ public class QuestionService {
     @Transactional
     public ResponseEntity<?> addListOfQuestions(@Valid List<QuestionDTO> questionDTOs) {
 
-        Map<String, Object> responseData = new HashMap<>();
         try {
             Set<String> categories = new HashSet<>();
             for(QuestionDTO category : questionDTOs)
@@ -118,8 +107,7 @@ public class QuestionService {
                 questionList.add(question);
             }
             List<Question> questions = questionJpaRepository.saveAll(questionList);
-            responseData.put("questionList", questions);
-            return ResponseUtil.created("Question List added successfully. No of Question added: " + questions.size(), responseData);
+            return ResponseUtil.created("Question List added successfully. No of Question added: " + questions.size(), questions);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -129,88 +117,80 @@ public class QuestionService {
         Integer categoryId = categoryJpaRepository.findByCategoryName(category);
         List<Integer> questionIds;
         if(categoryId != null){
-            Map<String, Object> responseData = new HashMap<>();
             questionIds = questionJpaRepository.getRandomQuestionIdsByCategory(categoryId, numQ);
-            responseData.put("questionIds", questionIds);
-            return ResponseUtil.ok("Random question Ids Generatd.", responseData);
+            return ResponseUtil.ok("Random question Ids Generated.", questionIds);
         }
         throw new ResourceNotFoundException("Category Id is not found for " + category);
     }
 
     public ResponseEntity<?> getQuestionsByIds(List<Integer> questionIds) {
-        Map<String, Object> responseData = new HashMap<>();
-        List<Question> questionList  = new ArrayList<>();
-        for(Integer id:questionIds){
-            questionList.add(questionJpaRepository.findById(id).get());
-        }
+
+        List<Question> questionList  =questionJpaRepository.findAllById(questionIds);
+
         List<QuestionWrapper> questionWrappers = questionList.stream().map(
                 q-> new QuestionWrapper(q.getId(),
                 q.getQuestion(), q.getOption1(),q.getOption2(), q.getOption3(),q.getOption4()))
                 .collect(Collectors.toList());
-        responseData.put("questionByIds", questionWrappers);
-        return ResponseUtil.ok("Question found for " + questionIds, responseData);
+
+        return ResponseUtil.ok("Question found for " + questionIds, questionWrappers);
     }
 
-    public ResponseEntity<?> getScore(List<SubmitResult> submit) {
-        Map<String, Object> responseData = new HashMap<>();
+    public ResponseEntity<?> getScore(List<TestResponse> submit) {
         int count = 0;
-        for (SubmitResult result: submit) {
-            Question questionDB = questionJpaRepository.findById(result.getId()).get();
+        for (TestResponse result: submit) {
+            Question questionDB = questionJpaRepository.findById(result.getId()).orElseThrow();
             if(result.getResponse().equals(questionDB.getAnswer())){
                 count++;
             }
         }
-        responseData.put("score", count);
+
         log.info("Quiz Score: {}", count);
-        return ResponseUtil.ok( "Received a score of " + count + "/" + submit.size(), responseData);
+        return ResponseUtil.ok( "Received a score of " + count + "/" + submit.size(), count);
     }
 
-    public ResponseEntity<?> getScoreV1(List<SubmitResult> submit) {
-        Map<String, Object> responseData = new HashMap<>();
-        List<Integer> ids = submit.stream().map(SubmitResult::getId).toList();
-        List<SubmitResult> correctAns = questionJdbcRepository.getCorrectAnsByIds(ids);
+    public ResponseEntity<?> getScoreV1(List<TestResponse> submit) {
+        List<Integer> ids = submit.stream().map(TestResponse::getId).toList();
+        List<TestResponse> correctAns = questionJdbcRepository.getCorrectAnsByIds(ids);
         int count = 0;
         Map<Integer, String> correctAnswerMap = correctAns.stream().collect(
-                Collectors.toMap(SubmitResult::getId, SubmitResult::getResponse)
+                Collectors.toMap(TestResponse::getId, TestResponse::getResponse)
         );
-        for (SubmitResult s : submit) {
+        for (TestResponse s : submit) {
             String correctAnswer = correctAnswerMap.get(s.getId());
             if(s.getResponse().equals(correctAnswer)){
                 count++;
             }
         }
-        responseData.put("score", count);
         log.info("Quiz Score V1: {}", count);
-        return ResponseUtil.ok( "Received a score of " + count + "/" + submit.size(), responseData);
+        return ResponseUtil.ok( "Received a score of " + count + "/" + submit.size(), count);
     }
 
     public ResponseEntity<?> checkResult(List<Integer> questionIds) {
-        Map<String, Object> responseData = new HashMap<>();
-        List<SubmitResult> resultList = questionJdbcRepository.getCorrectAnsByIds(questionIds);
-        responseData.put("correctAnswer", resultList);
-        return ResponseUtil.ok("Review Answer", responseData);
+        return ResponseUtil.ok("Review Answer", questionJdbcRepository.getCorrectAnsByIds(questionIds));
     }
 
-
     public ResponseEntity<?> duplicateQuestions() {
-        Map<String, Object> responseData = new HashMap<>();
         List<QuestionWrapper> duplicateQuestions = questionJdbcRepository.duplicateData();
         if(!CollectionUtils.isEmpty(duplicateQuestions)){
-            responseData.put("duplicate", duplicateQuestions);
-            return ResponseUtil.ok("Duplicate Questions found: " + duplicateQuestions.size(), responseData);
+            return ResponseUtil.ok("Duplicate Questions found: " + duplicateQuestions.size(), duplicateQuestions);
         }
-        else return ResponseUtil.noContent("No Duplicates", responseData);
+        else return ResponseUtil.ok("No duplicates found", duplicateQuestions.size());
     }
 
     @Transactional
     public ResponseEntity<?> deleteDuplicates() {
-        Map<String, Object> responseData = new HashMap<>();
         try{
             Integer rows =  questionJpaRepository.deleteDuplicates();
-            responseData.put("count", rows);
-            return ResponseUtil.ok( rows +  " duplicate Questions has been deleted successfully", responseData);
+            return ResponseUtil.ok( rows +  " duplicate Questions has been deleted successfully");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ResponseEntity<?> getResponsesByIds(List<Integer> questionIds) {
+        List<Question> questionList  =questionJpaRepository.findAllById(questionIds);
+        List<TestResponse> response = questionList.stream().map(
+                res -> new TestResponse(res.getId(), res.getAnswer())).toList();
+        return ResponseUtil.ok("Test Response", response);
     }
 }

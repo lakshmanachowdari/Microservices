@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class SubmitResult {
+public class TestResponse {
     private int id;
     private String response;
 }

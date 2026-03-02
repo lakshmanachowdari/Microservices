@@ -1,4 +1,4 @@
-package com.lakshman.question_service.Utility;
+package com.lakshman.quiz_service.Utility;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -6,12 +6,10 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 
 public class ResponseUtil {
-
     private static <T> ResponseEntity<ApiResponse<T>> build(
             HttpStatus status,
             String message,
             T data) {
-
         ApiResponse<T> response = ApiResponse.<T>builder()
                 .success(true)
                 .timestamp(LocalDateTime.now())
@@ -28,7 +26,6 @@ public class ResponseUtil {
     private static <T> ResponseEntity<ApiResponse<T>> build(
             HttpStatus status,
             String message) {
-
         ApiResponse<T> response = ApiResponse.<T>builder()
                 .success(true)
                 .timestamp(LocalDateTime.now())
@@ -60,5 +57,15 @@ public class ResponseUtil {
     // 202 ACCEPTED
     public static <T> ResponseEntity<ApiResponse<T>> accepted(String message, T data) {
         return build(HttpStatus.ACCEPTED, message, data);
+    }
+
+    // 204 SUCCESSFUL NO CONTENT
+    public static <T> ResponseEntity<ApiResponse<T>> noContent(String message, T data) {
+        return build(HttpStatus.NO_CONTENT, message, data);
+    }
+
+    // 400 BAD REQUEST
+    public static <T> ResponseEntity<ApiResponse<T>> serviceUnavailable(String message) {
+        return build(HttpStatus.BAD_REQUEST, message);
     }
 }

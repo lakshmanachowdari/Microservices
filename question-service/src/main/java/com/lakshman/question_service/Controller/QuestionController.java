@@ -1,7 +1,7 @@
 package com.lakshman.question_service.Controller;
 
 import com.lakshman.question_service.Constants.MarketDataConstants;
-import com.lakshman.question_service.Entity.SubmitResult;
+import com.lakshman.question_service.Entity.TestResponse;
 import com.lakshman.question_service.Service.QuestionService;
 import com.lakshman.question_service.Wrapper.QuestionDTO;
 import com.lakshman.question_service.Wrapper.QuestionIds;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import java.util.List;
 @Slf4j
@@ -53,13 +52,13 @@ public class QuestionController
         }
     }
 
-    // Add single question
+    // Add a single question
     @PostMapping(path = MarketDataConstants.ADD_QUESTION, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addQuestion(@Valid @RequestBody QuestionDTO question){
         return questionService.addQuestion(question);
     }
 
-    //Add list of questions
+    //Add a list of questions
     @PostMapping(path = MarketDataConstants.ADD_QUESTIONS, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> addListOfQuestions(@Valid @RequestBody List<QuestionDTO> questions){
         return questionService.addListOfQuestions(questions);
@@ -68,25 +67,25 @@ public class QuestionController
     // Generate questions
     @GetMapping(path = MarketDataConstants.GENERATE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> generateQuestionIds(@RequestParam(value = "category") String category,
-                                                             @RequestParam(value = "numQ") Integer numQ) throws Exception {
+                                                 @RequestParam(value = "numQ") Integer numQ) throws Exception {
         return questionService.generateQuestionIds(category, numQ);
     }
 
     // Get Question (Based on quiz Id)
-    @GetMapping(path = MarketDataConstants.GET_QUESTION_IDS, produces =  MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = MarketDataConstants.GET_QUESTION_IDS, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getQuestionsByIds(@RequestBody QuestionIds questionIds){
         return questionService.getQuestionsByIds(questionIds.getQuestionIds());
     }
 
     // Score
     @PostMapping(path = MarketDataConstants.SCORE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getScore(@RequestBody List<SubmitResult> submit){
+    public ResponseEntity<?> getScore(@RequestBody List<TestResponse> submit){
         return questionService.getScore(submit);
     }
 
     // Score v1
     @PostMapping(path = MarketDataConstants.SCORE_V1, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getScoreV1(@RequestBody List<SubmitResult> submit){
+    public ResponseEntity<?> getScoreV1(@RequestBody List<TestResponse> submit){
         return questionService.getScoreV1(submit);
     }
 
@@ -103,5 +102,11 @@ public class QuestionController
     @PutMapping(path = MarketDataConstants.DELETE_DUPLICATES, produces =  MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteDuplicates() {
         return questionService.deleteDuplicates();
+    }
+
+    // Fetch response (Based on quiz Id)
+    @PostMapping(path = MarketDataConstants.TEST_RESPONSE, produces =  MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getResponseByIds(@RequestBody QuestionIds questionIds){
+        return questionService.getResponsesByIds(questionIds.getQuestionIds());
     }
 }

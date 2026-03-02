@@ -1,67 +1,76 @@
 package com.lakshman.quiz_service.Service;
 
 import com.lakshman.quiz_service.Entity.Quiz;
-import com.lakshman.quiz_service.Wrapper.SubmitResult;
-import com.lakshman.quiz_service.Feing.QuizInterface;
-import com.lakshman.quiz_service.Repository.QuizRepository;
+import com.lakshman.quiz_service.Exception.ResourceNotFoundException;
+import com.lakshman.quiz_service.Feing.QuestionInterface;
+import com.lakshman.quiz_service.Repository.QuizJpaRepository;
+import com.lakshman.quiz_service.Utility.ApiResponse;
+import com.lakshman.quiz_service.Utility.ResponseUtil;
 import com.lakshman.quiz_service.Wrapper.QuestionIds;
 import com.lakshman.quiz_service.Wrapper.QuestionWrapper;
+import com.lakshman.quiz_service.Wrapper.TestResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 public class QuizService {
 
     @Autowired
-    QuizRepository quizRepository;
+    private QuizJpaRepository quizJapRepository;
 
     @Autowired
-    QuizInterface quizInterface;
+    private QuestionInterface questionInterface;
 
-    @CircuitBreaker(name  = "createQizBreaker", fallbackMethod = "createQuizFallback")
-    public ResponseEntity<String> createQuiz(String quizTitle, int numQ, String category) {
+    @CircuitBreaker(name = "createQizBreaker", fallbackMethod = "createQuizFallback")
+    public ResponseEntity<?> createQuiz(String quizTitle, int numQ, String category) {
         Quiz quiz = new Quiz();
         quiz.setTitle(quizTitle);
-        List<Integer> questionIds = quizInterface.generateQuestionIds(category, numQ).getBody();
-        quiz.setQuestionIds(questionIds);
-        quizRepository.save(quiz);
-        return new ResponseEntity<>("Created", HttpStatus.CREATED);
-    }
-
-    private ResponseEntity<String> createQuizFallback(String quizTitle, int numQ, String category, Throwable throwable){
-        return new ResponseEntity<>("FALLBACK", HttpStatus.BAD_REQUEST);
-    }
-
-    public ResponseEntity<List<QuestionWrapper>> getQuiz(Integer id) {
-        Optional<Quiz> quiz = quizRepository.findById(id);
-        List<QuestionWrapper> questionWrappers = new ArrayList<>();
-
-        if(quiz.isPresent()){
-            QuestionIds ids = new QuestionIds();
-            ids.setQuestionIds(quiz.get().getQuestionIds());
-            questionWrappers = quizInterface.getQuestionsByIds(ids).getBody();
+        ApiResponse<List<Integer>> response = questionInterface.generateQuestionIds(category, numQ).getBody();
+        if (response == null || !response.isSuccess()) {
+            throw new RuntimeException("Invalid response from Question Service");
         }
-        return new ResponseEntity<>(questionWrappers, HttpStatus.OK);
+        quiz.setQuestionIds(response.getData());
+        return ResponseUtil.created("Quiz for " + category + " created", quizJapRepository.save(quiz));
     }
 
-    public ResponseEntity<Integer> submitResult(Integer id, List<SubmitResult> submitResult) {
-        return quizInterface.getScore(submitResult);
+    private ResponseEntity<ApiResponse<String>> createQuizFallback(String quizTitle, int numQ, String category, Throwable throwable) {
+        return ResponseUtil.serviceUnavailable("Question service unavailable. Please try later.");
     }
 
-    public ResponseEntity<List<Quiz>> getAllQuiz() {
+    public ResponseEntity<?> getQuiz(Integer id) {
+        List<Integer> questionIds = quizJapRepository.findById(id).orElseThrow().getQuestionIds();
+        QuestionIds ids = new QuestionIds(questionIds);
+        ApiResponse<List<QuestionWrapper>> questionWrappers = questionInterface.getQuestionsByIds(ids).getBody();
+        return ResponseUtil.ok("Questions for the Quiz ID " + id, questionWrappers);
+    }
+
+    public ResponseEntity<?> submitResult(Integer id, List<TestResponse> testResponses) {
+        ApiResponse<Integer> response = questionInterface.getScore(testResponses).getBody();
+
+        if (response == null || !response.isSuccess())
+            throw new RuntimeException("Invalid response from Question Service");
+
+        return ResponseUtil.ok(response.getData() + " Out of " + testResponses.size() + " for test Id: " + id, response.getData());
+    }
+
+    public ResponseEntity<?> getAllQuiz() {
         try {
-            List<Quiz>  allQuiz = quizRepository.findAll();
-            return new ResponseEntity<>(allQuiz, HttpStatus.OK);
+            List<Quiz> allQuiz = quizJapRepository.findAll();
+            return ResponseUtil.ok("Total quiz's available are " + allQuiz.size(), allQuiz);
+        } catch (Exception e) {
+            throw new RuntimeException("Please try again some time later");
         }
-        catch(Exception e){
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.BAD_REQUEST);
-        }
+    }
+
+    public ResponseEntity<?> testResponseById(Integer id) {
+        List<Integer> questionIds = quizJapRepository.findById(id).orElseThrow().getQuestionIds();
+        List<TestResponse> responses = Objects.requireNonNull(questionInterface.getResponse(questionIds).getBody()).getData();
+        return ResponseUtil.ok("Test Response for Quiz ID: " + id, responses);
     }
 }

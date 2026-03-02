@@ -1,6 +1,6 @@
 package com.lakshman.question_service.Repository;
 
-import com.lakshman.question_service.Entity.SubmitResult;
+import com.lakshman.question_service.Entity.TestResponse;
 import com.lakshman.question_service.Wrapper.QuestionWrapper;
 import org.springframework.data.repository.query.Param;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,7 +18,7 @@ public class QuestionJdbcRepository {
         this.jdbc = jdbc;
     }
 
-    public List<SubmitResult> getCorrectAnsByIds(@Param("ids") List<Integer> ids){
+    public List<TestResponse> getCorrectAnsByIds(@Param("ids") List<Integer> ids){
         var sql = "select id,answer from questions where id in (:ids)";
         var params = new MapSqlParameterSource()
                 .addValue("ids", ids);
@@ -35,7 +35,7 @@ public class QuestionJdbcRepository {
         */
         
         return jdbc.query(sql, params, (rs, n) ->
-                new SubmitResult(rs.getInt("id"), rs.getString("answer")));
+                new TestResponse(rs.getInt("id"), rs.getString("answer")));
     }
 
     public List<QuestionWrapper> duplicateData() {

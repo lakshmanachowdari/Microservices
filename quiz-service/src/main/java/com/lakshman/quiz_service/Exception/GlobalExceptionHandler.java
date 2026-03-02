@@ -1,4 +1,4 @@
-package com.lakshman.question_service.Exception;
+package com.lakshman.quiz_service.Exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
