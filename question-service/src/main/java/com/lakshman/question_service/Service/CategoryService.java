@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class CategoryService {
@@ -55,5 +57,10 @@ public class CategoryService {
                 "Category description updated successfully",
                 responseData
         );
+    }
+
+    public ResponseEntity<?> getCategories() {
+        List<Category> response = categoryJpaRepository.findAll();
+        return ResponseUtil.ok("No of categories fetched: " +response.size(), response);
     }
 }

@@ -1,6 +1,10 @@
 package com.lakshman.question_service.Constants;
 
-public  final class MarketDataConstants {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public final class MarketDataConstants {
+
     public  static final String ALL_QUESTIONS = "allQuestions";
     public static final String QUESTION_BY_CATEGORY = "category/{category}";
     public static final String ADD_QUESTION = "add";
@@ -14,4 +18,5 @@ public  final class MarketDataConstants {
     public static final String DELETE_DUPLICATES = "duplicate/delete";
     public static final String ADD_CATEGORY = "add";
     public static final String TEST_RESPONSE = "response";
+    public static final String GET_CATEGORIES = "allCategories";
 }

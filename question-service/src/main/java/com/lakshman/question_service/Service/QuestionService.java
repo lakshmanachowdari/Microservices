@@ -138,7 +138,7 @@ public class QuestionService {
     public ResponseEntity<?> getScore(List<TestResponse> submit) {
         int count = 0;
         for (TestResponse result: submit) {
-            Question questionDB = questionJpaRepository.findById(result.getId()).orElseThrow();
+            Question questionDB = questionJpaRepository.findById(result.getId()).orElse(new Question());
             if(result.getResponse().equals(questionDB.getAnswer())){
                 count++;
             }

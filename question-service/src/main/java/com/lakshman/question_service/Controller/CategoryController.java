@@ -7,10 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("category")
@@ -23,4 +20,10 @@ public class CategoryController {
     public ResponseEntity<?> createCategory(@Valid @RequestBody Category category) {
         return categoryService.saveCategory(category);
     }
+
+    @GetMapping(value = MarketDataConstants.GET_CATEGORIES, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getCategories() {
+        return categoryService.getCategories();
+    }
+
 }
