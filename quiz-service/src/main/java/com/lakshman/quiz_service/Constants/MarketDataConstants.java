@@ -12,4 +12,5 @@ public  final class MarketDataConstants {
     public static final String GET_RESPONSE = "question/score";
     public static final String GET_QUESTION_IDS = "question/getQuestions";
     public static final String GET_TEST_RESPONSE = "question/check";
+    public static final String GET_RESPONSE_V1 = "question/v1/score";
 }

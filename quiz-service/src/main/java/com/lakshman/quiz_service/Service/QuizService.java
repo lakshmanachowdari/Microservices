@@ -10,6 +10,7 @@ import com.lakshman.quiz_service.Wrapper.QuestionIds;
 import com.lakshman.quiz_service.Wrapper.QuestionWrapper;
 import com.lakshman.quiz_service.Wrapper.TestResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
@@ -50,11 +51,21 @@ public class QuizService {
         return ResponseUtil.ok("Questions for the Quiz ID " + id, questionWrappers);
     }
 
+    @Retry(name = "retryQuizScore", fallbackMethod = "retryQuizScoreFallback")
     public ResponseEntity<?> submitResult(Integer id, List<TestResponse> testResponses) {
         ApiResponse<Integer> response = questionInterface.getScore(testResponses).getBody();
 
         if (response == null || !response.isSuccess())
             throw new RuntimeException("Invalid response from Question Service");
+
+        return ResponseUtil.ok(response.getData() + " Out of " + testResponses.size() + " for test Id: " + id, response.getData());
+    }
+
+    public ResponseEntity<?> retryQuizScoreFallback(Integer id, List<TestResponse> testResponses, Throwable ex) {
+        ApiResponse<Integer> response = questionInterface.getV1Score(testResponses).getBody();
+
+        if (response == null || !response.isSuccess())
+            return ResponseUtil.serviceUnavailable("Question service unavailable. Please try later.");
 
         return ResponseUtil.ok(response.getData() + " Out of " + testResponses.size() + " for test Id: " + id, response.getData());
     }

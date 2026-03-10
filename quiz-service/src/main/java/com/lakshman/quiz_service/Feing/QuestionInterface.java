@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient("QUESTION-SERVICE")
+@FeignClient(name = "QUESTION-SERVICE")
 public interface QuestionInterface {
 
-    //Get question ids
+    // Get question ids
     @GetMapping(path = MarketDataConstants.GENERATE_QUESTIONS, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ApiResponse<List<Integer>>> generateQuestionIds(@RequestParam String category,
                                                                    @RequestParam Integer numQ);
@@ -29,6 +29,10 @@ public interface QuestionInterface {
     // Score
     @PostMapping(path = MarketDataConstants.GET_RESPONSE, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ApiResponse<Integer>> getScore(@RequestBody List<TestResponse> submit);
+
+    // Score V1
+    @PostMapping(path = MarketDataConstants.GET_RESPONSE_V1, produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ApiResponse<Integer>> getV1Score(@RequestBody List<TestResponse> submit);
 
     @GetMapping(path = MarketDataConstants.GET_TEST_RESPONSE, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ApiResponse<List<TestResponse>>> getResponse(@RequestParam(value = "ids") List<Integer> questionIds);
