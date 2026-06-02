@@ -54,29 +54,12 @@ Beyond coding, I love sharing knowledge and connecting with the tech community!
 ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 ![Jira](https://img.shields.io/badge/jira-%230A55D1.svg?style=for-the-badge&logo=jira&logoColor=white)
 
----
-
-## 📊 GitHub Analytics
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=lakshmanachowdari&show_icons=true&theme=tokyonight&count_private=true" alt="Lakshmana's GitHub stats" height="180px" />
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=lakshmanachowdari&theme=tokyonight" alt="Lakshmana's GitHub Streak" height="180px" />
-</p>
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=lakshmanachowdari&layout=compact&theme=tokyonight" alt="Top Languages" height="180px" />
-</p>
-
----
-
 ## 🌐 Connect With Me
 
 Feel free to follow my platforms or reach out for professional collaborations!
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/lakshmana-chowdari)
-[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://github.com/lakshmanachowdari)
-[![Medium](https://img.shields.io/badge/Medium-12100E?style=for-the-badge&logo=medium&logoColor=white)](https://github.com/lakshmanachowdari)
-[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://github.com/lakshmanachowdari)
+[![Gmail](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](lakshmanachowdarin@gmail.com)
 [![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=about.me&logoColor=white)](xyx)
 
 ---
