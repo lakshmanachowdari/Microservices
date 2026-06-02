@@ -20,7 +20,6 @@ Beyond coding, I love sharing knowledge and connecting with the tech community!
 * ☕ Powered by clean architecture, caffeine, and SOLID design principles.
 * 🧩 I treat massive legacy monolithic codebases like giant puzzles waiting to be broken down into sleek, fault-tolerant microservices.
 * 📈 Perpetually curious—if a new piece of framework documentation drops, I'm likely digesting it in the middle of the night.
-* 🤖 I automated a workflow once just to save 30 seconds, and I will absolutely do it again.
 * 🤖 When I'm not debugging, I'm experimenting with automated CI/CD workflows or modern DevOps tools.
 
 ---
