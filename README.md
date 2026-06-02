@@ -10,7 +10,7 @@
 
 I am a passionate **Java Backend Developer** with 5 years of experience in crafting robust, scalable, and high-performance enterprise applications. I specialize in the Spring ecosystem, microservices architecture, and cloud integrations, always aiming to write clean, maintainable, and efficient code.
 
-Beyond coding, I love sharing knowledge and connecting with the tech community! You can find me sharing insights, tutorials, and behind-the-scenes content across **YouTube**, **Medium**, and **Instagram**.
+Beyond coding, I love sharing knowledge and connecting with the tech community!
 
 ### ⚡ Fun Facts
 * ☕ Powered by caffeine and clean code principles.
