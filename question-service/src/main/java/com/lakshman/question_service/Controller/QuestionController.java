@@ -42,7 +42,7 @@ public class QuestionController
 
     // Fetch Questions by question category
     @GetMapping(path = MarketDataConstants.QUESTION_BY_CATEGORY, produces =  MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getQuestionById( @PathVariable(value = "category") String category) throws Exception {
+    public ResponseEntity<?> getQuestionById(@PathVariable(value = "category") String category) {
         try{
             return questionService.getQuestionByCategory(category);
         }
@@ -67,7 +67,7 @@ public class QuestionController
     // Generate questions
     @GetMapping(path = MarketDataConstants.GENERATE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> generateQuestionIds(@RequestParam(value = "category") String category,
-                                                 @RequestParam(value = "numQ") Integer numQ) throws Exception {
+                                                 @RequestParam(value = "numQ") Integer numQ) {
         return questionService.generateQuestionIds(category, numQ);
     }
 
