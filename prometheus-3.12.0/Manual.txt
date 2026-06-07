@@ -1,0 +1,5 @@
+Instructions
+Step 1: Download the Prometheus fom  browser
+Step 2: Replace the prometheus.yml
+Step 3: Go to the path:E:\Lakshman Projects\Projects\Microservices\prometheus-3.12.0
+Step 4: use the below command to start the Prometheus ./prometheus.exe --config.file=prometheus.yml
