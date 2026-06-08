@@ -1,0 +1,420 @@
+openapi: 3.0.0
+info:
+  title: Question Service API
+  description: API for managing questions and quiz operations
+  version: 1.0.0
+  contact:
+    name: Lakshman
+  license:
+    name: Apache 2.0
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+  - url: http://localhost:8081
+    description: Alternative server
+
+paths:
+  /question/allQuestions:
+    get:
+      summary: Fetch all questions
+      operationId: getAllQuestions
+      tags:
+        - Questions
+      responses:
+        '200':
+          description: Successfully retrieved all questions
+          content:
+            application/json:
+              schema:
+                type: object
+        '204':
+          description: No questions found
+        '500':
+          description: Internal server error
+
+  /question/category/{category}:
+    get:
+      summary: Fetch questions by category
+      operationId: getQuestionByCategory
+      tags:
+        - Questions
+      parameters:
+        - name: category
+          in: path
+          required: true
+          description: Category name to filter questions
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully retrieved questions for the category
+          content:
+            application/json:
+              schema:
+                type: object
+        '204':
+          description: No questions found for the category
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+
+  /question/add:
+    post:
+      summary: Add a single question
+      operationId: addQuestion
+      tags:
+        - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionDTO'
+      responses:
+        '201':
+          description: Question added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid input - validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+  /question/addList:
+    post:
+      summary: Add a list of questions
+      operationId: addListOfQuestions
+      tags:
+        - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuestionDTO'
+      responses:
+        '201':
+          description: Questions added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid input - validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+  /question/generate:
+    get:
+      summary: Generate random question IDs for a quiz
+      operationId: generateQuestionIds
+      tags:
+        - Questions
+      parameters:
+        - name: category
+          in: query
+          required: true
+          description: Category name
+          schema:
+            type: string
+        - name: numQ
+          in: query
+          required: true
+          description: Number of questions to generate
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Question IDs generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid parameters
+        '500':
+          description: Internal server error
+
+  /question/getQuestions:
+    post:
+      summary: Get questions by their IDs
+      operationId: getQuestionsByIds
+      tags:
+        - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionIds'
+      responses:
+        '200':
+          description: Questions retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid input
+        '404':
+          description: Questions not found
+        '500':
+          description: Internal server error
+
+  /question/score:
+    post:
+      summary: Calculate score for test responses
+      operationId: getScore
+      tags:
+        - Quiz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TestResponse'
+      responses:
+        '200':
+          description: Score calculated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /question/v1/score:
+    post:
+      summary: Calculate score for test responses (v1)
+      operationId: getScoreV1
+      tags:
+        - Quiz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TestResponse'
+      responses:
+        '200':
+          description: Score calculated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+  /question/check:
+    get:
+      summary: Check result for specific question IDs
+      operationId: checkResult
+      tags:
+        - Quiz
+      parameters:
+        - name: ids
+          in: query
+          required: true
+          description: List of question IDs
+          schema:
+            type: array
+            items:
+              type: integer
+      responses:
+        '200':
+          description: Results retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid parameters
+        '500':
+          description: Internal server error
+
+  /question/duplicateData:
+    get:
+      summary: Find duplicate questions
+      operationId: duplicateQuestions
+      tags:
+        - Maintenance
+      responses:
+        '200':
+          description: Duplicate questions identified
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+
+  /question/duplicate/delete:
+    put:
+      summary: Delete duplicate questions
+      operationId: deleteDuplicates
+      tags:
+        - Maintenance
+      responses:
+        '200':
+          description: Duplicates deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+
+  /question/response:
+    post:
+      summary: Get test responses by question IDs
+      operationId: getResponseByIds
+      tags:
+        - Quiz
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionIds'
+      responses:
+        '200':
+          description: Responses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Invalid input
+        '404':
+          description: Responses not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    QuestionDTO:
+      type: object
+      required:
+        - question
+        - option1
+        - option2
+        - option3
+        - option4
+        - answer
+        - questionLevel
+        - categoryName
+      properties:
+        question:
+          type: string
+          description: The question text
+          example: "What is the capital of France?"
+        option1:
+          type: string
+          description: First option
+          example: "London"
+        option2:
+          type: string
+          description: Second option
+          example: "Paris"
+        option3:
+          type: string
+          description: Third option
+          example: "Berlin"
+        option4:
+          type: string
+          description: Fourth option
+          example: "Madrid"
+        answer:
+          type: string
+          description: Correct answer
+          example: "Paris"
+        questionLevel:
+          type: string
+          description: Difficulty level of the question
+          enum:
+            - EASY
+            - MEDIUM
+            - HARD
+          example: "MEDIUM"
+        categoryName:
+          type: string
+          description: Category name
+          example: "Geography"
+
+    TestResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          description: Question ID
+          example: 1
+        response:
+          type: string
+          description: User's answer
+          example: "Paris"
+
+    QuestionIds:
+      type: object
+      required:
+        - questionIds
+      properties:
+        questionIds:
+          type: array
+          items:
+            type: integer
+          description: List of question IDs
+          example: [1, 2, 3, 4, 5]
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        status:
+          type: integer
+          description: HTTP status code
+        error:
+          type: string
+          description: Error type
+        message:
+          type: string
+          description: Error message
+        path:
+          type: string
+          description: Request path
+
+tags:
+  - name: Questions
+    description: Operations related to questions
+  - name: Quiz
+    description: Operations related to quiz and scoring
+  - name: Maintenance
+    description: Maintenance operations
