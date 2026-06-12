@@ -1,7 +1,6 @@
 package com.lakshman.quiz_service.Service;
 
 import com.lakshman.quiz_service.Entity.Quiz;
-import com.lakshman.quiz_service.Exception.ResourceNotFoundException;
 import com.lakshman.quiz_service.Feing.QuestionInterface;
 import com.lakshman.quiz_service.Repository.QuizJpaRepository;
 import com.lakshman.quiz_service.Utility.ApiResponse;

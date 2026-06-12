@@ -68,4 +68,17 @@ public class ResponseUtil {
     public static <T> ResponseEntity<ApiResponse<T>> serviceUnavailable(String message) {
         return build(HttpStatus.BAD_REQUEST, message);
     }
+
+    // 404 NOT FOUND
+    public static <T> ApiResponse<T> serviceNotAvailable(String message) {
+        return ApiResponse.<T>builder()
+                .success(false)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.NOT_FOUND.value())
+                .code(HttpStatus.NOT_FOUND.name())
+                .message(message)
+                .data(null)
+                .errors(null)
+                .build();
+    }
 }
