@@ -13,4 +13,7 @@ public  final class MarketDataConstants {
     public static final String GET_QUESTION_IDS = "question/getQuestions";
     public static final String GET_TEST_RESPONSE = "question/check";
     public static final String GET_RESPONSE_V1 = "question/v1/score";
+
+    public static final String GATEWAY_URL = "http://localhost:8083/question-service/";
+    public static final String GET_QUESTION_ID_URL =  GATEWAY_URL + GET_QUESTION_IDS;
 }
