@@ -27,8 +27,19 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Build Project
+      - name: Build Maven Project
         run: mvn clean install
 
-      - name: Run Tests
-        run: mvn test
+      - name: Verify JAR
+        run: ls -la target/
+
+      - name: Build & Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v7
+        with:
+          image: lakshmanachowdari/online-assessment-platform-jenkins
+          tags: api-gateway
+          registry: docker.io
+          directory: ./api-gateway
+          dockerfile: ./api-gateway/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
