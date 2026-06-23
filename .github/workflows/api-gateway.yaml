@@ -1,17 +1,20 @@
-name: Java CI with Maven
+name: API Gateway CI
 
 on:
   push:
-    branches:
-      - master
+    paths:
+      - 'api-gateway/**'
   pull_request:
-    branches:
-      - master
+    paths:
+      - 'api-gateway/**'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: api-gateway
 
     steps:
       - name: Checkout Code
