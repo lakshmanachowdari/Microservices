@@ -98,6 +98,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Embedded DB for tests -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -126,6 +133,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>quiz-service</finalName>
     </build>
 
 </project>

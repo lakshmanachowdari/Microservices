@@ -175,6 +175,7 @@
                 </executions>
             </plugin>
         </plugins>
+        <finalName>question-service</finalName>
     </build>
 
 </project>

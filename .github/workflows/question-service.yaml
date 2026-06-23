@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'question-service/**'
+  pull_request:
+    paths:
+      - 'question-service/**'
 
 jobs:
   build:
@@ -14,12 +17,29 @@ jobs:
         working-directory: question-service
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
           cache: maven
 
-      - run: mvn clean install
+      - name: Build Maven Project
+        run: mvn clean install
+
+      - name: Verify JAR
+        run: ls -la target/
+
+      - name: Build & Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v7
+        with:
+          image: lakshmanachowdari/online-assessment-platform-jenkins
+          tags: question-service
+          registry: docker.io
+          directory: ./question-service
+          dockerfile: ./question-service/Dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
