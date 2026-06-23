@@ -1,0 +1,25 @@
+name: Question Service CI
+
+on:
+  push:
+    paths:
+      - 'question-service/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: question-service
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - run: mvn clean install
